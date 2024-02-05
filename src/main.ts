@@ -1,4 +1,4 @@
-import express from "express";
+import express, { e } from "express";
 import {db, firestore} from '../banco de dados/firebase';
 
 const app = express();
@@ -28,7 +28,30 @@ app.post("/usuario", async(req,res)=>{
         res.status(500).send(e)
     }
 
+});
+
+app.get('/listarUsuarios', async (req, res) =>{
+
+    try {
+        const usuarios = await firestore.getDocs(firestore.collection(db, 'usuarios'))
+
+ const usuariosLista = usuarios.docs.map((doc)=>({
+    id:doc.id,
+    ...doc.data(),
+ }))
+ res.send(usuariosLista)
+    } catch (error) {
+        console.log("Erro ao Listar Usuarios: " + e)
+
+        res.status(500).send("Erro ao Listar Usuarios: " + e)
+
+        
+    }
 })
+
+
+
+
 
 app.listen(3000, function () {
     console.log("servidor rodando em http://localhost:3000");
