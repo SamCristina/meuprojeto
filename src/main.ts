@@ -1,4 +1,4 @@
-import express, { e } from "express";
+import express from "express";
 import {db, firestore} from '../banco de dados/firebase';
 
 const app = express();
@@ -40,7 +40,7 @@ app.get('/listarUsuarios', async (req, res) =>{
     ...doc.data(),
  }))
  res.send(usuariosLista)
-    } catch (error) {
+    } catch (e) {
         console.log("Erro ao Listar Usuarios: " + e)
 
         res.status(500).send("Erro ao Listar Usuarios: " + e)
@@ -49,9 +49,24 @@ app.get('/listarUsuarios', async (req, res) =>{
     }
 })
 
+app.put('/atualizarUsuario/:id', async (req, res) => {
+    const id = req.params.id
+    const nome = req.body.nome
 
+    try {
+        await firestore.updateDoc(firestore.doc(db, 'usuarios', id), {
+            nome: nome,
+        })
 
+    res.send('Usuario atualizado com sucesso')
 
+    } catch (e) {
+     console.log('Erro ao atualizar usuario: ' + e)
+
+     res.status(500).send('Erro ao atualizar usuario: ' + e)
+    }
+
+})
 
 app.listen(3000, function () {
     console.log("servidor rodando em http://localhost:3000");
